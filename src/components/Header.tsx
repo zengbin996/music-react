@@ -1,13 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import {
-  Translate,
-  Avatar,
-  DarkMode,
-  WavesLeft,
-  Github,
-} from '@icon-park/react';
+import { Avatar, WavesLeft } from '@icon-park/react';
 
 export default function Header() {
   const [search, setSearch] = useState(false);
@@ -31,7 +25,9 @@ export default function Header() {
           <Button type="text">推荐</Button>
           <Button type="text">排行</Button>
           <Button type="text">歌单</Button>
-          <Button type="text">歌手</Button>
+          <Button type="text" className="mr-2">
+            歌手
+          </Button>
 
           {!search && (
             <Button
@@ -55,26 +51,12 @@ export default function Header() {
         </div>
 
         <div className="flex gap-4">
-          <DarkMode
-            theme="outline"
-            size="24"
-            fill="#333"
-            className="cursor-pointer"
-          />
-          <Translate
-            theme="outline"
-            size="24"
-            fill="#333"
-            className="cursor-pointer"
-          />
           <Avatar
             theme="outline"
             size="24"
             fill="#333"
             className="cursor-pointer"
           />
-          <div className="border-r border-gray-200"></div>
-          <Github theme="outline" size="24" fill="#333" />
         </div>
       </div>
     </div>
