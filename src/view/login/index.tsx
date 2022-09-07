@@ -1,35 +1,55 @@
-import React, { useState } from 'react';
-import { LockClosedIcon } from '@heroicons/react/20/solid';
-import { get } from '../../request';
-export default function Example() {
+import React, { useState, useEffect } from 'react'
+import { ArrowLongRightIcon, LockClosedIcon } from '@heroicons/react/20/solid'
+import { login } from '../../request/api'
+import { message } from 'antd'
+
+export default function Login() {
+  type accountType = {
+    username: string
+    password: string
+  }
+
+  const { username, password } = JSON.parse(localStorage.getItem('accountLogin') || '{}')
+
   //用户名和密码
-  const [account, setAccount] = useState({
-    username: '',
-    password: '',
-  });
-  const usernameChange = function (e: any) {
-    setAccount({ ...account, username: e.target.value });
-  };
-  const passwordChange = function (e: any) {
-    setAccount({ ...account, password: e.target.value });
-  };
+  const [account, setAccount] = useState<accountType>({ username, password })
+
+  const usernameChange = function (e: React.ChangeEvent<HTMLInputElement>) {
+    setAccount({ ...account, username: e.target.value })
+  }
+  const passwordChange = function (e: React.ChangeEvent<HTMLInputElement>) {
+    setAccount({ ...account, password: e.target.value })
+  }
 
   //记住账户名和密码
-  const [remember, setRemember] = useState(false);
-  const rememberChnage = function (e) {
-    setRemember(e.target.checked);
-  };
+  const [remember, setRemember] = useState(Boolean(username))
+  const rememberChnage = function (e: React.ChangeEvent<HTMLInputElement>) {
+    setRemember(e.target.checked)
+  }
+
+  type requestType = {
+    code: number
+  }
 
   //提交
-  const submitHandle = function (e) {
-    e.preventDefault();
+  const submitHandle = function (e: any) {
+    e.preventDefault()
 
-    get(
-      'http://42.192.137.99:3000/login/cellphone?phone=13087567172&password=1231230..'
-    ).then((res) => {
-      console.log(res);
-    });
-  };
+    login({
+      phone: account.username,
+      password: account.password,
+    }).then((res: any) => {
+      if (res.code === 200) {
+        message.success('success')
+        localStorage.setItem('userInfo', JSON.stringify(res))
+        if (remember) {
+          localStorage.setItem('accountLogin', JSON.stringify(account))
+        } else {
+          localStorage.removeItem('accountLogin')
+        }
+      }
+    })
+  }
 
   return (
     <>
@@ -81,25 +101,19 @@ export default function Example() {
               <div className="flex items-center">
                 <input
                   onChange={rememberChnage}
-                  value={remember}
+                  checked={remember}
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900"
-                >
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
+                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
                   Forgot your password?
                 </a>
               </div>
@@ -108,10 +122,7 @@ export default function Example() {
             <div>
               <button className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  <LockClosedIcon
-                    className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                    aria-hidden="true"
-                  />
+                  <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
                 </span>
                 Sign in
               </button>
@@ -120,5 +131,5 @@ export default function Example() {
         </div>
       </div>
     </>
-  );
+  )
 }
